@@ -1,0 +1,27 @@
+name: Sync Upstream
+on:
+  schedule:
+    - cron: '0 0 */5 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Merge upstream if updated
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/OpenListTeam/OpenList-Worker.git
+          git fetch upstream main
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo "No upstream update, skip."
+            exit 0
+          fi
+          echo "Upstream has updates, merging..."
+          git merge upstream/main --no-edit
+          git push origin HEAD:main
