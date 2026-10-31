@@ -672,7 +672,7 @@ export const meHandler = async (c: any) => {
     return c.json(
       {
         code: 401,
-        message: "Unauthorized",
+        message: !user ? "Unauthorized" : "Account is disabled",
         data: null,
       },
       401,
